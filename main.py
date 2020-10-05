@@ -104,20 +104,25 @@ def writeTxt(filename, data):
         s = s.replace("'", '').replace(',', '') + '\n'  # 去除单引号，逗号，每行末尾追加换行符
         file.write(s)
     file.close()
-    print(filename + "文件保存成功!")
+    print(filename + "文档保存成功!")
 
+# 删除信息函数
+def deleteTxt(fileName):
+    file = open(fileName, 'r+')
+    file.truncate()
+    print(fileName + "文档清空成功!")
 
 if __name__ == '__main__':
-    G = SubwayGraph(11, 0.5, 0)
+    G = SubwayGraph(11, 0.5, 0.2)
     G.loadEdges('G.txt')
     G.loadNodes()
     G.loadOD('OD.txt')
     G.initLoad()
-    # writeTxt('L.txt', G.nodeLoad)
+    writeTxt('L.txt', G.nodeLoad)
     G.getGraphDegree()
     G.getGraphBetweenness()
     G.initCapacity()
-    # writeTxt('C.txt', G.capacityList)
+    writeTxt('C.txt', G.capacityList)
     G.showGraph()
     print("degree list is ", G.averDegreeList, ", max degree is ", G.maxDegree)
     print("betweenness list is ", G.averBetweennessList, ", max betweenness is ", G.maxBetweenness)
