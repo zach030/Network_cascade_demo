@@ -14,6 +14,8 @@ class SubwayGraph(nx.Graph):
     maxDegree = 0
     # 归一化的度列表
     averDegreeList = []
+    # 失效容限列表
+    failureTolerance = []
     # 图中最大介数中心性
     maxBetweenness = 0
     # 归一化的介数中心性列表
@@ -95,6 +97,13 @@ class SubwayGraph(nx.Graph):
         for x in score.values():
             self.averBetweennessList.append(x / self.maxBetweenness)
 
+    def initFailureTolerance(self):
+        for number in range(1, self.nodeNum):
+            self.failureTolerance.append(self.degree(number) +
+                                         (self.degree(number)
+                                          * (1 - self.degree(number) / (2 * self.size()))) ** 0.5)
+        print("init failure list is:", self.failureTolerance)
+
 
 def writeTxt(filename, data):
     # filename为写入CSV文件的路径，data为要写入数据列表.
@@ -106,11 +115,13 @@ def writeTxt(filename, data):
     file.close()
     print(filename + "文档保存成功!")
 
+
 # 删除信息函数
 def deleteTxt(fileName):
     file = open(fileName, 'r+')
     file.truncate()
     print(fileName + "文档清空成功!")
+
 
 def initGraph(G):
     G.loadEdges('G.txt')
@@ -121,9 +132,9 @@ def initGraph(G):
     G.getGraphDegree()
     G.getGraphBetweenness()
     G.initCapacity()
+    G.initFailureTolerance()
     # writeTxt('C.txt', G.capacityList)
     # G.showGraph()
     # print("degree list is ", G.averDegreeList, ", max degree is ", G.maxDegree)
     # print("betweenness list is ", G.averBetweennessList, ", max betweenness is ", G.maxBetweenness)
     # print("capacity list is ", G.capacityList)
-
