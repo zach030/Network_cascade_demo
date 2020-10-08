@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import pandas as pd
 
-
 class SubwayGraph(nx.Graph):
     # 图中节点数
     nodeNum = 0
@@ -16,6 +15,8 @@ class SubwayGraph(nx.Graph):
     averDegreeList = []
     # 失效容限列表
     failureTolerance = []
+    # 初始节点所含粒子数列表
+    initNodeSizeList = []
     # 图中最大介数中心性
     maxBetweenness = 0
     # 归一化的介数中心性列表
@@ -104,6 +105,11 @@ class SubwayGraph(nx.Graph):
                                           * (1 - self.degree(number) / (2 * self.size()))) ** 0.5)
         print("init failure list is:", self.failureTolerance)
 
+    def initNodeSize(self):
+        for number in range(1, self.nodeNum):
+            self.initNodeSizeList.append(self.degree(number))
+        print("init node size list:", self.initNodeSizeList)
+
 
 def writeTxt(filename, data):
     # filename为写入CSV文件的路径，data为要写入数据列表.
@@ -133,6 +139,7 @@ def initGraph(G):
     G.getGraphBetweenness()
     G.initCapacity()
     G.initFailureTolerance()
+    G.initNodeSize()
     # writeTxt('C.txt', G.capacityList)
     # G.showGraph()
     # print("degree list is ", G.averDegreeList, ", max degree is ", G.maxDegree)

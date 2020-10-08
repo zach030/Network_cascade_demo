@@ -1,9 +1,11 @@
 import random
+
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import networkx as nx
-import numpy as np
 
+
+# 对一个节点的一个粒子的行走路径
 def random_weighted_walk(G, initial_node, steps):
     walk_list = [initial_node]
     prob_list = []
@@ -57,11 +59,22 @@ def subwayRandomWalker(Graph):
     global pos
     pos = nx.spring_layout(G)
     # 起始节点
-    global seed
-    seed = np.random.choice(G.number_of_nodes())
-    print("Graph seed is:\n", seed)
     global path
-    path = random_weighted_walk(G, seed, steps)
-    print("Graph path is:\n", path)
+    global seed
+    AllPath = []
+    # 10个节点多个粒子同时行走得到list
+    for i in range(1, G.number_of_nodes() + 1):
+        seed = i
+        print("Graph seed is:\n", seed)
+        for k in range(1, G.initNodeSizeList[i-1] + 1):
+            path = random_weighted_walk(G, seed, steps)
+            print("no." + str(k) + " random node path is:")
+            print(path)
+            AllPath.append(path)
+    print(AllPath)
+    # for size in AllPath:
+
+    currentLoad = {}
+    # {"1":2,"2":,......} 再与initNodeSizeList进行比较
     ani = animation.FuncAnimation(fig, update, frames=len(path), interval=1000, repeat=True)
     plt.show()
