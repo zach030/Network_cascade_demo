@@ -2,27 +2,30 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import pandas as pd
 
+
 class SubwayGraph(nx.Graph):
     # 图中节点数
-    nodeNum = 0
+    node_num = 0
     # 图的OD三元组列表
-    nodeOD = []
+    node_od = []
     # 节点load列表
-    nodeLoad = []
+    node_load = []
     # 图中最大度
-    maxDegree = 0
+    max_degree = 0
     # 归一化的度列表
-    averDegreeList = []
+    aver_degree_list = []
     # 失效容限列表
-    failureTolerance = []
+    failure_tolerance = []
     # 初始节点所含粒子数列表
-    initNodeSizeList = []
+    init_node_size_list = []
     # 图中最大介数中心性
-    maxBetweenness = 0
+    max_betweenness = 0
     # 归一化的介数中心性列表
-    averBetweennessList = []
+    aver_betweenness_list = []
     # 节点capacity列表
-    capacityList = []
+    capacity_list = []
+    # 最大联通子图节点数list
+    largest_component_nodes = []
     # 参数 w
     w = 0
     # 参数 β
@@ -32,86 +35,90 @@ class SubwayGraph(nx.Graph):
 
     def __init__(self, nums, w, b):
         super(SubwayGraph, self).__init__()
-        self.nodeNum = nums
+        self.node_num = nums
         self.w = w
         self.b = b
 
-    def loadNodes(self):
-        nodes = range(1, self.nodeNum)
+    def load_nodes(self):
+        nodes = range(1, self.node_num)
         self.add_nodes_from(nodes)
 
-    def loadEdges(self, filename):
+    def load_edges(self, filename):
         edges = pd.read_csv(filename, sep=',', header=None)
         edgeLists = [tuple(xi) for xi in edges.values]
         self.add_edges_from(edgeLists)
 
-    def loadOD(self, filename):
+    def load_OD(self, filename):
         loads = pd.read_csv(filename, sep=',', header=None)
         loadData = [tuple(li) for li in loads.values]
         loadList = []
         for ld in loadData:
             loadList.append(ld)
-        self.nodeOD = loadList
+        self.node_od = loadList
 
-    def showGraph(self):
+    def show_graph(self):
         nx.draw_networkx(self)
         plt.show()
 
-    def initLoad(self):
+    def init_load(self):
         sumOD_list = []
-        for i in range(1, self.nodeNum):
+        for i in range(1, self.node_num):
             sumOD = 0
-            for node_load in self.nodeOD:
+            for node_load in self.node_od:
                 if (node_load[0] == i) or (node_load[1] == i):
                     sumOD += node_load[2]
             sumOD_list.append(sumOD)
         maxLoad = max(sumOD_list)
         for load in sumOD_list:
-            self.nodeLoad.append(load / maxLoad)
+            self.node_load.append(load / maxLoad)
 
-    def initCapacity(self):
-        rawCapacityList = []
-        for i in range(0, self.nodeNum - 1):
-            rawCapacityList.append(self.w * self.averDegreeList[i] + (1 - self.w) * self.averBetweennessList[i])
+    def init_capacity(self):
+        raw_capacity_list = []
+        for i in range(0, self.node_num - 1):
+            raw_capacity_list.append(self.w * self.aver_degree_list[i] + (1 - self.w) * self.aver_betweenness_list[i])
         loadBalance = []
-        for i in range(0, self.nodeNum - 1):
-            loadBalance.append(self.nodeLoad[i] / rawCapacityList[i])
+        for i in range(0, self.node_num - 1):
+            loadBalance.append(self.node_load[i] / raw_capacity_list[i])
         self.a = max(loadBalance)
-        for i in range(0, self.nodeNum - 1):
-            self.capacityList.append((1 + self.b) * self.a * rawCapacityList[i])
+        for i in range(0, self.node_num - 1):
+            self.capacity_list.append((1 + self.b) * self.a * raw_capacity_list[i])
 
-    def getGraphDegree(self):
+    def init_largest_component_nodes_list(self):
+        self.largest_component_nodes.append(self.number_of_nodes())
+
+    def get_graph_degree(self):
         degreeList = []
-        for number in range(1, self.nodeNum):
+        for number in range(1, self.node_num):
             degreeList.append(self.degree(number))
         # 网络最大度
-        self.maxDegree = max(degreeList)
+        self.max_degree = max(degreeList)
         for degree in degreeList:
-            self.averDegreeList.append(degree / self.maxDegree)
+            self.aver_degree_list.append(degree / self.max_degree)
 
-    def getGraphBetweenness(self):
+    def get_graph_betweeness(self):
         # 存放各站点介数中心性的字典
         score = nx.betweenness_centrality(self)
         # 求出最大的介数中心性
-        self.maxBetweenness = max(score.values())
+        self.max_betweenness = max(score.values())
         # 求Bi/Bmax
         for x in score.values():
-            self.averBetweennessList.append(x / self.maxBetweenness)
+            self.aver_betweenness_list.append(x / self.max_betweenness)
 
-    def initFailureTolerance(self):
-        for number in range(1, self.nodeNum):
-            self.failureTolerance.append(self.degree(number) +
+    # 初始失效容限
+    def init_failure_tolerance(self):
+        for number in range(1, self.node_num):
+            self.failure_tolerance.append(self.degree(number) +
                                          (self.degree(number)
                                           * (1 - self.degree(number) / (2 * self.size()))) ** 0.5)
-        print("init failure list is:", self.failureTolerance)
 
-    def initNodeSize(self):
-        for number in range(1, self.nodeNum):
-            self.initNodeSizeList.append(self.degree(number))
-        print("init node size list:", self.initNodeSizeList)
+    # 模拟每个节点的初始粒子数
+    def init_node_size(self):
+        for number in range(1, self.node_num):
+            self.init_node_size_list.append(self.degree(number))
+        print("each node initial random_granule num list is:", self.init_node_size_list)
 
 
-def writeTxt(filename, data):
+def write_txt(filename, data):
     # filename为写入CSV文件的路径，data为要写入数据列表.
     file = open(filename, 'a')
     for i in range(len(data)):
@@ -123,25 +130,26 @@ def writeTxt(filename, data):
 
 
 # 删除信息函数
-def deleteTxt(fileName):
+def delete_txt(fileName):
     file = open(fileName, 'r+')
     file.truncate()
     print(fileName + "文档清空成功!")
 
 
-def initGraph(G):
-    G.loadEdges('G.txt')
-    G.loadNodes()
-    G.loadOD('OD.txt')
-    G.initLoad()
-    # writeTxt('L.txt', G.nodeLoad)
-    G.getGraphDegree()
-    G.getGraphBetweenness()
-    G.initCapacity()
-    G.initFailureTolerance()
-    G.initNodeSize()
-    # writeTxt('C.txt', G.capacityList)
-    # G.showGraph()
-    # print("degree list is ", G.averDegreeList, ", max degree is ", G.maxDegree)
-    # print("betweenness list is ", G.averBetweennessList, ", max betweenness is ", G.maxBetweenness)
-    # print("capacity list is ", G.capacityList)
+def init_graph(G):
+    G.load_edges('G.txt')
+    G.load_nodes()
+    G.load_OD('OD.txt')
+    G.init_load()
+    # write_txt('L.txt', G.node_load)
+    G.get_graph_degree()
+    G.get_graph_betweeness()
+    G.init_capacity()
+    G.init_failure_tolerance()
+    G.init_node_size()
+    G.init_largest_component_nodes_list()
+    # write_txt('C.txt', G.capacity_list)
+    # G.show_graph()
+    # print("degree list is ", G.aver_degree_list, ", max degree is ", G.max_degree)
+    # print("betweenness list is ", G.aver_betweenness_list, ", max betweenness is ", G.max_betweenness)
+    # print("capacity list is ", G.capacity_list)

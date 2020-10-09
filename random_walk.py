@@ -1,6 +1,6 @@
 import networkx as nx
 import random
-from Animated_Random_Walk import *
+from animated_random_walk import *
 
 G = nx.Graph()
 steps = 50
@@ -22,7 +22,7 @@ def random_weighted_walk(G, initial_node, steps):
     return walk_list
 
 
-def subwayRandomWalker(Graph):
+def subway_random_walker(Graph):
     global G
     G = Graph
     global pos
@@ -35,7 +35,7 @@ def subwayRandomWalker(Graph):
     for i in range(1, G.number_of_nodes() + 1):
         seed = i
         # print("Graph initial seed is:\n", seed)
-        for k in range(1, G.initNodeSizeList[i - 1] + 1):
+        for k in range(1, G.init_node_size_list[i - 1] + 1):
             path = random_weighted_walk(G, seed, steps)
             # print("no." + str(k) + " random node path is:")
             # print(path)
@@ -55,13 +55,14 @@ def subwayRandomWalker(Graph):
         currentGraphLoad[k] = currentNode
         for j in range(1, 11):
             currentNodeLoad[j] = currentNode.count(j)
-        print("step " + str(k) + " each node load is: ")
+        print("step " + str(k) + ": each node contain granule num dict is: ")
         print(currentNodeLoad)
         for node, load in currentNodeLoad.items():
-            if G.initNodeSizeList[node - 1] < load:
+            if G.init_node_size_list[node - 1] < load:
                 initialFailureList.append(node)
         if len(initialFailureList) != 0:
+            print("Find node failed, got failed node list !")
             break
-    print("initial failure node list is :")
-    print(initialFailureList)
+    # print("initial failure node list is :")
+    # print(initialFailureList)
     return initialFailureList
