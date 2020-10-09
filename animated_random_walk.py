@@ -32,7 +32,7 @@ def update(num):
 fig, ax = plt.subplots(figsize=(8, 6))
 plt.axis('off')
 
-
+# 动画模拟粒子随机行走
 def AnimateRandomWalk():
     # Build plot
     ani = animation.FuncAnimation(fig, update, frames=len(path), interval=1000, repeat=True)

@@ -26,6 +26,8 @@ class SubwayGraph(nx.Graph):
     capacity_list = []
     # 最大联通子图节点数list
     largest_component_nodes = []
+    # 存活节点数list
+    active_nodes = []
     # 参数 w
     w = 0
     # 参数 β
@@ -85,6 +87,9 @@ class SubwayGraph(nx.Graph):
 
     def init_largest_component_nodes_list(self):
         self.largest_component_nodes.append(self.number_of_nodes())
+
+    def init_active_nodes_list(self):
+        self.active_nodes.append(self.number_of_nodes())
 
     def get_graph_degree(self):
         degreeList = []
@@ -148,6 +153,7 @@ def init_graph(G):
     G.init_failure_tolerance()
     G.init_node_size()
     G.init_largest_component_nodes_list()
+    G.init_active_nodes_list()
     # write_txt('C.txt', G.capacity_list)
     # G.show_graph()
     # print("degree list is ", G.aver_degree_list, ", max degree is ", G.max_degree)

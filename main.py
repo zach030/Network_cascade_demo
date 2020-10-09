@@ -11,3 +11,7 @@ if __name__ == '__main__':
     init_failure = subway_random_walker(G)
     # 网络级联失效
     cascading_failure_node(G, 'C.txt', 'L.txt', init_failure)
+    print("\n最大联通子图节点数变化list:", "\t")
+    print(G.largest_component_nodes)
+    print("剩余存活节点数变化list:", "\t")
+    print(G.active_nodes)

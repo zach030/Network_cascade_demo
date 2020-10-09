@@ -48,13 +48,12 @@ def get_graph_info(graph, components_list, live_list):
     live_num = graph.number_of_nodes()
     print("当前图中未失效节点数为: " + str(live_num))
     live_list.append(live_num)
-    print("当前节点失效流程已结束\n")
+    print("当前节点失效流程已结束")
 
 
 # 级联失效主函数
 def cascading_failure_node(graph, capacity_file, load_file, failure_node_list):
     # 存入load和capacity字典
-    not_fail_nodes = [graph.number_of_nodes()]
     load = {}
     capacity = {}
     # 加载load以及capacity字典
@@ -69,7 +68,7 @@ def cascading_failure_node(graph, capacity_file, load_file, failure_node_list):
         # 删除失效节点
         graph.remove_node(failure_node_list[i])
         print("节点:" + str([failure_node_list[i]]) + "失效！信息已删除！")
-        get_graph_info(graph, graph.largest_component_nodes, not_fail_nodes)
+        get_graph_info(graph, graph.largest_component_nodes, graph.active_nodes)
     print("第一级初始节点列表已全部失效！")
     for ki in range(2, 11):
         print("---------------第" + str(ki) + "级失效！--------------")
@@ -90,5 +89,5 @@ def cascading_failure_node(graph, capacity_file, load_file, failure_node_list):
                 print("节点:" + str(failed_node) + "失效！信息已删除！")
         else:
             print("本级无失效节点")
-        get_graph_info(graph, graph.largest_component_nodes, not_fail_nodes)
+        get_graph_info(graph, graph.largest_component_nodes, graph.active_nodes)
         print("当前剩余节点:", graph.nodes())
