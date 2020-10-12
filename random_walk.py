@@ -40,7 +40,6 @@ def subway_random_walker(Graph):
             # print("no." + str(k) + " random node path is:")
             # print(path)
             AllPath.append(path)
-    # print(AllPath)
     # print(len(AllPath))
     # 当前时间步下所有粒子的分布list
     currentGraphLoad = {}

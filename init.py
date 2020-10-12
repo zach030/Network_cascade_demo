@@ -34,6 +34,8 @@ class SubwayGraph(nx.Graph):
     b = 0
     # 参数 a
     a = 0
+    # 总粒子数
+    granule_num = 0
 
     def __init__(self, nums, w, b):
         super(SubwayGraph, self).__init__()
@@ -91,6 +93,9 @@ class SubwayGraph(nx.Graph):
     def init_active_nodes_list(self):
         self.active_nodes.append(self.number_of_nodes())
 
+    def init_granule_num(self, num):
+        self.granule_num = num
+
     def get_graph_degree(self):
         degreeList = []
         for number in range(1, self.node_num):
@@ -113,13 +118,13 @@ class SubwayGraph(nx.Graph):
     def init_failure_tolerance(self):
         for number in range(1, self.node_num):
             self.failure_tolerance.append(self.degree(number) +
-                                         (self.degree(number)
-                                          * (1 - self.degree(number) / (2 * self.size()))) ** 0.5)
+                                          (self.degree(number)
+                                           * (1 - self.degree(number) / (2 * self.size()))) ** 0.5)
 
     # 模拟每个节点的初始粒子数
     def init_node_size(self):
         for number in range(1, self.node_num):
-            self.init_node_size_list.append(self.degree(number))
+            self.init_node_size_list.append(int((self.granule_num / (2 * self.size())) * self.degree(number)))
         print("each node initial random_granule num list is:", self.init_node_size_list)
 
 
@@ -151,9 +156,12 @@ def init_graph(G):
     G.get_graph_betweeness()
     G.init_capacity()
     G.init_failure_tolerance()
-    G.init_node_size()
     G.init_largest_component_nodes_list()
     G.init_active_nodes_list()
+    # 以图中度的两倍为测试总粒子数
+    G.init_granule_num(2 * G.size())
+    # 分配每个节点的粒子数
+    G.init_node_size()
     # write_txt('C.txt', G.capacity_list)
     # G.show_graph()
     # print("degree list is ", G.aver_degree_list, ", max degree is ", G.max_degree)
