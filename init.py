@@ -34,14 +34,14 @@ class SubwayGraph(nx.Graph):
     b = 0
     # 参数 a
     a = 0
-    # 总粒子数
     granule_num = 0
 
-    def __init__(self, nums, w, b):
+    def __init__(self, nums, w, b, granule_num):
         super(SubwayGraph, self).__init__()
-        self.node_num = nums
+        self.node_num = nums + 1
         self.w = w
         self.b = b
+        self.granule_num = granule_num
 
     def load_nodes(self):
         nodes = range(1, self.node_num)
@@ -52,29 +52,27 @@ class SubwayGraph(nx.Graph):
         edgeLists = [tuple(xi) for xi in edges.values]
         self.add_edges_from(edgeLists)
 
-    def load_OD(self, filename):
-        loads = pd.read_csv(filename, sep=',', header=None)
-        loadData = [tuple(li) for li in loads.values]
-        loadList = []
-        for ld in loadData:
-            loadList.append(ld)
-        self.node_od = loadList
+    # def load_OD():
+    #     loadList = []
+    #     loads = pd.read_csv(filename, header=None)
+    #     for data in loads.values:
+    #         loadList.append(data)
+    #     self.node_od = loadList
+    #     print(self.node_load)
 
     def show_graph(self):
         nx.draw_networkx(self)
         plt.show()
 
-    def init_load(self):
-        sumOD_list = []
-        for i in range(1, self.node_num):
-            sumOD = 0
-            for node_load in self.node_od:
-                if (node_load[0] == i) or (node_load[1] == i):
-                    sumOD += node_load[2]
-            sumOD_list.append(sumOD)
-        maxLoad = max(sumOD_list)
-        for load in sumOD_list:
+    def init_load(self, filename):
+        loadList = []
+        loads = pd.read_csv(filename, header=None)
+        for data in loads.values:
+            loadList.append(data[0])
+        maxLoad = max(loadList)
+        for load in loadList:
             self.node_load.append(load / maxLoad)
+        print("each node load list is:", self.node_load)
 
     def init_capacity(self):
         raw_capacity_list = []
@@ -93,13 +91,10 @@ class SubwayGraph(nx.Graph):
     def init_active_nodes_list(self):
         self.active_nodes.append(self.number_of_nodes())
 
-    def init_granule_num(self, num):
-        self.granule_num = num
-
     def get_graph_degree(self):
         degreeList = []
         for number in range(1, self.node_num):
-            degreeList.append(self.degree(number))
+            degreeList.append(self.degree[number])
         # 网络最大度
         self.max_degree = max(degreeList)
         for degree in degreeList:
@@ -111,26 +106,28 @@ class SubwayGraph(nx.Graph):
         # 求出最大的介数中心性
         self.max_betweenness = max(score.values())
         # 求Bi/Bmax
-        for x in score.values():
-            self.aver_betweenness_list.append(x / self.max_betweenness)
+        # 根据key对字典进行排序
+        key_list = sorted(score.keys())
+        for k in key_list:
+            self.aver_betweenness_list.append((score[k] / self.max_betweenness))
 
-    # 初始失效容限
+    # 初始失效容限计算
     def init_failure_tolerance(self):
         for number in range(1, self.node_num):
-            self.failure_tolerance.append(self.degree(number) +
-                                          (self.degree(number)
-                                           * (1 - self.degree(number) / (2 * self.size()))) ** 0.5)
+            self.failure_tolerance.append(self.degree[number] +
+                                          (self.degree[number]
+                                           * (1 - self.degree[number] / (2 * self.size()))) ** 0.5)
 
     # 模拟每个节点的初始粒子数
     def init_node_size(self):
         for number in range(1, self.node_num):
-            self.init_node_size_list.append(int((self.granule_num / (2 * self.size())) * self.degree(number)))
+            self.init_node_size_list.append(int((self.granule_num / (2 * self.size())) * self.degree[number]))
         print("each node initial random_granule num list is:", self.init_node_size_list)
 
 
 def write_txt(filename, data):
     # filename为写入CSV文件的路径，data为要写入数据列表.
-    file = open(filename, 'a')
+    file = open(filename, 'w')
     for i in range(len(data)):
         s = str(data[i]).replace('[', '').replace(']', '')  # 去除[],这两行按数据不同，可以选择
         s = s.replace("'", '').replace(',', '') + '\n'  # 去除单引号，逗号，每行末尾追加换行符
@@ -149,20 +146,19 @@ def delete_txt(fileName):
 def init_graph(G):
     G.load_edges('G.txt')
     G.load_nodes()
-    G.load_OD('OD.txt')
-    G.init_load()
-    # write_txt('L.txt', G.node_load)
+    # G.load_OD('LS.txt')
+    # 直接读取LS文件，初始化节点负载
+    G.init_load('LS.txt')
+    write_txt('L.txt', G.node_load)
     G.get_graph_degree()
     G.get_graph_betweeness()
     G.init_capacity()
     G.init_failure_tolerance()
+    print("初始失效粒子数上限：", G.failure_tolerance)
+    G.init_node_size()
     G.init_largest_component_nodes_list()
     G.init_active_nodes_list()
-    # 以图中度的两倍为测试总粒子数
-    G.init_granule_num(2 * G.size())
-    # 分配每个节点的粒子数
-    G.init_node_size()
-    # write_txt('C.txt', G.capacity_list)
+    write_txt('C.txt', G.capacity_list)
     # G.show_graph()
     # print("degree list is ", G.aver_degree_list, ", max degree is ", G.max_degree)
     # print("betweenness list is ", G.aver_betweenness_list, ", max betweenness is ", G.max_betweenness)

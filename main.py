@@ -4,7 +4,7 @@ from init import *
 
 if __name__ == '__main__':
     # 建立地铁网络模型
-    G = SubwayGraph(11, 0.5, 0.1)
+    G = SubwayGraph(10, 0.5, 0, 18)  # 增加总粒子数作为入参
     # 初始化网络数据
     init_graph(G)
     # 随机行走模拟网络失效
@@ -15,3 +15,4 @@ if __name__ == '__main__':
     print(G.largest_component_nodes)
     print("剩余存活节点数变化list:", "\t")
     print(G.active_nodes)
+    write_txt('cascade.txt',G.active_nodes)

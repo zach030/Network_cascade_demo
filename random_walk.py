@@ -1,5 +1,7 @@
-import networkx as nx
 import random
+
+import networkx as nx
+
 from animated_random_walk import *
 
 G = nx.Graph()
@@ -36,32 +38,31 @@ def subway_random_walker(Graph):
         seed = i
         # print("Graph initial seed is:\n", seed)
         for k in range(1, G.init_node_size_list[i - 1] + 1):
+            # 遍历一个节点的所有粒子
             path = random_weighted_walk(G, seed, steps)
-            # print("no." + str(k) + " random node path is:")
-            # print(path)
+            # 所有的粒子走50步的结果list
             AllPath.append(path)
-    # print(len(AllPath))
+    print(AllPath)
     # 当前时间步下所有粒子的分布list
-    currentGraphLoad = {}
+    currentGraphLoad = {}  # key:时间步，value：所有粒子分布的list
     # 当前时间步下每个节点的粒子数负载list
-    currentNodeLoad = {}
+    currentNodeLoad = {}  # 当前时间步下：key:图节点 value：此节点上的粒子数
     # 初始失效节点list
     initialFailureList = []
-    for k in range(0, 10):
-        currentNode = []
+    for k in range(0, steps):  # 依据步数进行遍历
+        currentNode = []  # 当前时间步下：粒子分布情况的list
         for size in AllPath:
             currentNode.append(size[k])
+        # print(currentNode)
         currentGraphLoad[k] = currentNode
-        for j in range(1, 11):
-            currentNodeLoad[j] = currentNode.count(j)
+        for j in range(1, G.number_of_nodes() + 1):
+            currentNodeLoad[j] = currentNode.count(j)  # 统计此时间步下，每个节点的粒子数
         print("step " + str(k) + ": each node contain granule num dict is: ")
         print(currentNodeLoad)
         for node, load in currentNodeLoad.items():
-            if G.init_node_size_list[node - 1] < load:
+            if G.failure_tolerance[node - 1] < load:
                 initialFailureList.append(node)
         if len(initialFailureList) != 0:
             print("Find node failed, got failed node list !")
             break
-    # print("initial failure node list is :")
-    # print(initialFailureList)
     return initialFailureList

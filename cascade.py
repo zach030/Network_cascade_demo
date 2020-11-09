@@ -68,8 +68,8 @@ def cascading_failure_node(graph, capacity_file, load_file, failure_node_list):
         # 删除失效节点
         graph.remove_node(failure_node_list[i])
         print("节点:" + str([failure_node_list[i]]) + "失效！信息已删除！")
-        get_graph_info(graph, graph.largest_component_nodes, graph.active_nodes)
-    print("第一级初始节点列表已全部失效！")
+    get_graph_info(graph, graph.largest_component_nodes, graph.active_nodes)
+    print("第一级初始节点列表失效仿真结束！")
     for ki in range(2, 11):
         print("---------------第" + str(ki) + "级失效！--------------")
         # 检查load字典
