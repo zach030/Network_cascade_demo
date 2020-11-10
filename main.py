@@ -4,7 +4,7 @@ from init import *
 
 if __name__ == '__main__':
     # 建立地铁网络模型
-    G = SubwayGraph(10, 0.5, 0, 18)  # 增加总粒子数作为入参
+    G = SubwayGraph(10, 0.5, 0, 28)  # 增加总粒子数作为入参
     # 初始化网络数据
     init_graph(G)
     # 随机行走模拟网络失效

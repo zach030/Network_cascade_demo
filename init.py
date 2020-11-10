@@ -1,3 +1,5 @@
+import random
+
 import matplotlib.pyplot as plt
 import networkx as nx
 import pandas as pd
@@ -50,6 +52,7 @@ class SubwayGraph(nx.Graph):
     def load_edges(self, filename):
         edges = pd.read_csv(filename, sep=',', header=None)
         edgeLists = [tuple(xi) for xi in edges.values]
+
         self.add_edges_from(edgeLists)
 
     # def load_OD():
@@ -120,8 +123,20 @@ class SubwayGraph(nx.Graph):
 
     # 模拟每个节点的初始粒子数
     def init_node_size(self):
+        distributed_granule = 0  # 累计已分配粒子
         for number in range(1, self.node_num):
-            self.init_node_size_list.append(int((self.granule_num / (2 * self.size())) * self.degree[number]))
+            distributing_granule = int((self.granule_num / (2 * self.size())) * self.degree[number])
+            self.init_node_size_list.append(distributing_granule)
+            distributed_granule += distributing_granule
+        remain_nodes = self.granule_num - distributed_granule
+        print("after first distribute remain :", remain_nodes, "nodes")
+        while remain_nodes > 0:
+            # 取随机节点
+            random_node = random.randint(1, self.node_num)
+            # 取剩余节点数1
+            self.init_node_size_list[random_node] += 1
+            remain_nodes -= 1
+        print("after second distribute remain :", remain_nodes, "nodes")
         print("each node initial random_granule num list is:", self.init_node_size_list)
 
 
@@ -145,7 +160,7 @@ def delete_txt(fileName):
 
 def init_graph(G):
     G.load_edges('G.txt')
-    G.load_nodes()
+    # G.load_nodes()
     # G.load_OD('LS.txt')
     # 直接读取LS文件，初始化节点负载
     G.init_load('LS.txt')
