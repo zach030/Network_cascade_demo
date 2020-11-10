@@ -131,9 +131,9 @@ class SubwayGraph(nx.Graph):
         remain_nodes = self.granule_num - distributed_granule
         print("after first distribute remain :", remain_nodes, "nodes")
         while remain_nodes > 0:
-            # 取随机节点
-            random_node = random.randint(1, self.node_num)
-            # 取剩余节点数1
+            # 当还有剩余时：取随机节点
+            random_node = random.randint(0, self.node_num-2)
+            # 取粒子数1进行随机分配
             self.init_node_size_list[random_node] += 1
             remain_nodes -= 1
         print("after second distribute remain :", remain_nodes, "nodes")
