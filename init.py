@@ -55,14 +55,6 @@ class SubwayGraph(nx.Graph):
 
         self.add_edges_from(edgeLists)
 
-    # def load_OD():
-    #     loadList = []
-    #     loads = pd.read_csv(filename, header=None)
-    #     for data in loads.values:
-    #         loadList.append(data)
-    #     self.node_od = loadList
-    #     print(self.node_load)
-
     def show_graph(self):
         nx.draw_networkx(self)
         plt.show()
