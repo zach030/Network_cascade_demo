@@ -2,7 +2,7 @@ import random
 
 import networkx as nx
 
-from animated_random_walk import *
+from utils.animated_random_walk import *
 
 G = nx.Graph()
 steps = 50

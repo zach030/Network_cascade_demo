@@ -38,11 +38,20 @@ class SubwayGraph(nx.Graph):
     a = 0
     granule_num = 0
 
-    def __init__(self, nums, w, b, granule_num):
+    def __init__(self):
         super(SubwayGraph, self).__init__()
-        self.node_num = nums + 1
+
+    def init_subway_graph(self, num, w, b, granule_num):
+        self.node_num = num + 1
         self.w = w
         self.b = b
+        self.granule_num = granule_num
+
+    def set_params(self, w, b):
+        self.w = w
+        self.b = b
+
+    def set_granule_num(self, granule_num):
         self.granule_num = granule_num
 
     def load_nodes(self):
@@ -52,20 +61,26 @@ class SubwayGraph(nx.Graph):
     def load_edges(self, filename):
         edges = pd.read_csv(filename, sep=',', header=None)
         edgeLists = [tuple(xi) for xi in edges.values]
-
         self.add_edges_from(edgeLists)
+        self.node_num = self.number_of_nodes()
 
     def show_graph(self):
         nx.draw_networkx(self)
         plt.show()
 
-    def init_load(self, filename):
+    def init_load_by_file(self, filename):
         loadList = []
         loads = pd.read_csv(filename, header=None)
         for data in loads.values:
             loadList.append(data[0])
         maxLoad = max(loadList)
         for load in loadList:
+            self.node_load.append(load / maxLoad)
+        print("each node load list is:", self.node_load)
+
+    def init_load_by_list(self, load_list):
+        maxLoad = max(load_list)
+        for load in load_list:
             self.node_load.append(load / maxLoad)
         print("each node load list is:", self.node_load)
 
@@ -100,6 +115,7 @@ class SubwayGraph(nx.Graph):
         score = nx.betweenness_centrality(self)
         # 求出最大的介数中心性
         self.max_betweenness = max(score.values())
+        print("max betweenness is: ", self.max_betweenness)
         # 求Bi/Bmax
         # 根据key对字典进行排序
         key_list = sorted(score.keys())
@@ -124,7 +140,7 @@ class SubwayGraph(nx.Graph):
         print("after first distribute remain :", remain_nodes, "nodes")
         while remain_nodes > 0:
             # 当还有剩余时：取随机节点
-            random_node = random.randint(0, self.node_num-2)
+            random_node = random.randint(0, self.node_num - 2)
             # 取粒子数1进行随机分配
             self.init_node_size_list[random_node] += 1
             remain_nodes -= 1
@@ -150,13 +166,11 @@ def delete_txt(fileName):
     print(fileName + "文档清空成功!")
 
 
-def init_graph(G):
-    G.load_edges('G.txt')
-    # G.load_nodes()
-    # G.load_OD('LS.txt')
-    # 直接读取LS文件，初始化节点负载
-    G.init_load('LS.txt')
-    write_txt('L.txt', G.node_load)
+# 填信息的init方法
+def init_graph_fillblank(G, list_node, load):
+    G.init_load_by_list(load)
+    G.add_edges_from(list_node)
+    write_txt('./data/L.txt', G.node_load)
     G.get_graph_degree()
     G.get_graph_betweeness()
     G.init_capacity()
@@ -165,8 +179,37 @@ def init_graph(G):
     G.init_node_size()
     G.init_largest_component_nodes_list()
     G.init_active_nodes_list()
-    write_txt('C.txt', G.capacity_list)
-    # G.show_graph()
-    # print("degree list is ", G.aver_degree_list, ", max degree is ", G.max_degree)
-    # print("betweenness list is ", G.aver_betweenness_list, ", max betweenness is ", G.max_betweenness)
-    # print("capacity list is ", G.capacity_list)
+    write_txt('./data/C.txt', G.capacity_list)
+    G.show_graph()
+
+
+# 读txt的init方法
+def init_graph_readfile(G):
+    write_txt('./data/L.txt', G.node_load)
+    G.get_graph_degree()
+    G.get_graph_betweeness()
+    G.init_capacity()
+    G.init_failure_tolerance()
+    print("初始失效粒子数上限：", G.failure_tolerance)
+    G.init_node_size()
+    G.init_largest_component_nodes_list()
+    G.init_active_nodes_list()
+    write_txt('./data/C.txt', G.capacity_list)
+    G.show_graph()
+
+
+# 原先测试的init方法
+def init_graph_manual(G):
+    G.load_edges('../data/G.txt')  # 可替代
+    G.init_load_by_file('../data/LS.txt')
+    write_txt('../data/L.txt', G.node_load)
+    G.get_graph_degree()
+    G.get_graph_betweeness()
+    G.init_capacity()
+    G.init_failure_tolerance()
+    print("初始失效粒子数上限：", G.failure_tolerance)
+    G.init_node_size()
+    G.init_largest_component_nodes_list()
+    G.init_active_nodes_list()
+    write_txt('../data/C.txt', G.capacity_list)
+    G.show_graph()

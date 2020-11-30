@@ -1,7 +1,7 @@
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 
-from random_walk import *
+from utils.random_walk import *
 
 
 def update(num):
