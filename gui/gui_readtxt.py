@@ -12,7 +12,6 @@ from PyQt5.QtCore import QEventLoop, QTimer
 from PyQt5.QtWidgets import QFileDialog
 
 from graph import subway_graph
-from graph.main_test import Start
 from graph.subway_graph import init_graph_readfile
 
 G = subway_graph.SubwayGraph()
@@ -112,7 +111,7 @@ class Ui_MainWindow(object):
                 print("read load list file:", data)
                 self.outputWritten(data)
 
-    # TODO 不需要这个读取文件
+    # TODO 不需要这个读取文件 @song
     def showDialog3(self):
         filename_L = QFileDialog.getOpenFileName(self, 'Open file', '.')
         if filename_L[0]:

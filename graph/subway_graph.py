@@ -113,6 +113,7 @@ class SubwayGraph(nx.Graph):
     def get_graph_betweeness(self):
         # 存放各站点介数中心性的字典
         score = nx.betweenness_centrality(self)
+        print("all betweenness are :", score.values())
         # 求出最大的介数中心性
         self.max_betweenness = max(score.values())
         print("max betweenness is: ", self.max_betweenness)
@@ -200,9 +201,9 @@ def init_graph_readfile(G):
 
 # 原先测试的init方法
 def init_graph_manual(G):
-    G.load_edges('../data/G.txt')  # 可替代
-    G.init_load_by_file('../data/LS.txt')
-    write_txt('../data/L.txt', G.node_load)
+    G.load_edges('./data/G.txt')  # 可替代
+    G.init_load_by_file('./data/LS.txt')
+    write_txt('./data/L.txt', G.node_load)
     G.get_graph_degree()
     G.get_graph_betweeness()
     G.init_capacity()
@@ -211,5 +212,5 @@ def init_graph_manual(G):
     G.init_node_size()
     G.init_largest_component_nodes_list()
     G.init_active_nodes_list()
-    write_txt('../data/C.txt', G.capacity_list)
+    write_txt('./data/C.txt', G.capacity_list)
     G.show_graph()

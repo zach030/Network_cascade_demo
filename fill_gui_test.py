@@ -35,7 +35,7 @@ def event1(ui):  # 将节点数传回
 def event2(d1):  # 将节点信息与负载装入列表
     global i
     global num
-    # TODO 这里的增加边的次数和点数不是一定相等的，最好提供按钮来手动添加一组边，点击确定才停
+    # TODO 这里的增加边的次数和点数不是一定相等的，最好提供按钮来手动添加一组边，点击确定才停 @zhang
     if i < num:
         node1 = d1.lineEdit.text()
         node2 = d1.lineEdit_2.text()
@@ -61,12 +61,14 @@ def event3(ui):  # 传回粒子数
     print("attack random nodes are:", num_animate)
     return
 
+
 def event4(ui):  # 生成图
     # 初始化图
     G.init_subway_graph(num, 0.5, 0, num_animate)
-    print("Subway graph has been initialed",G.edges)
-    init_graph_fillblank(G, list_node,list_overload)
+    init_graph_fillblank(G, list_node, list_overload)
+    print("Subway graph has been initialed", G.edges)
     return
+
 
 if __name__ == "__main__":  # 创建gui函数
     app = QApplication(sys.argv)
