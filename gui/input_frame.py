@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'input.ui'
+# Form implementation generated from reading ui file 'input_Frame.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -11,10 +11,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_dialog(object):  # 弹出对话框
+class Ui_dialog(object):
     def setupUi(self, dialog):
         dialog.setObjectName("dialog")
-        dialog.resize(400, 286)
+        dialog.resize(400, 217)
         self.label = QtWidgets.QLabel(dialog)
         self.label.setGeometry(QtCore.QRect(50, 20, 131, 31))
         font = QtGui.QFont()
@@ -26,28 +26,21 @@ class Ui_dialog(object):  # 弹出对话框
         self.lineEdit.setGeometry(QtCore.QRect(50, 60, 61, 31))
         self.lineEdit.setObjectName("lineEdit")
         self.lineEdit_2 = QtWidgets.QLineEdit(dialog)
-        self.lineEdit_2.setGeometry(QtCore.QRect(170, 60, 61, 31))
+        self.lineEdit_2.setGeometry(QtCore.QRect(180, 60, 61, 31))
         self.lineEdit_2.setObjectName("lineEdit_2")
-        self.label_2 = QtWidgets.QLabel(dialog)
-        self.label_2.setGeometry(QtCore.QRect(50, 110, 131, 31))
-        font = QtGui.QFont()
-        font.setFamily("宋体")
-        font.setPointSize(10)
-        self.label_2.setFont(font)
-        self.label_2.setObjectName("label_2")
-        self.lineEdit_3 = QtWidgets.QLineEdit(dialog)
-        self.lineEdit_3.setGeometry(QtCore.QRect(50, 150, 61, 31))
-        self.lineEdit_3.setObjectName("lineEdit_3")
         self.pushButton = QtWidgets.QPushButton(dialog)
-        self.pushButton.setGeometry(QtCore.QRect(50, 220, 93, 31))
+        self.pushButton.setGeometry(QtCore.QRect(50, 120, 93, 31))
         self.pushButton.setObjectName("pushButton")
+        self.pushButton_2 = QtWidgets.QPushButton(dialog)
+        self.pushButton_2.setGeometry(QtCore.QRect(180, 120, 93, 31))
+        self.pushButton_2.setObjectName("pushButton_2")
 
         self.retranslateUi(dialog)
         QtCore.QMetaObject.connectSlotsByName(dialog)
 
     def retranslateUi(self, dialog):
         _translate = QtCore.QCoreApplication.translate
-        dialog.setWindowTitle(_translate("dialog", "输入节点信息"))
-        self.label.setText(_translate("dialog", "第1个节点信息："))
-        self.label_2.setText(_translate("dialog", "负载："))
+        dialog.setWindowTitle(_translate("dialog", "输入边信息"))
+        self.label.setText(_translate("dialog", "第1条边信息："))
         self.pushButton.setText(_translate("dialog", "确定"))
+        self.pushButton_2.setText(_translate("dialog", "结束"))
